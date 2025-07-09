@@ -164,6 +164,34 @@ public class CustomerJdbcDao implements CustomerDao {
 
     @Override
     public List<Customer> findByNameIgnoreCase(String name) {
-        return List.of();
+        String customerSql = "SELECT * FROM customer WHERE LOWER(name) = LOWER(?)";
+        return jdbc.query(customerSql, (rs, rowNum) -> {
+            Long id = rs.getLong("id");
+            CustomerType type = CustomerType.valueOf(rs.getString("type"));
+
+            if (type == CustomerType.REAL) {
+                String realCustomerSql = "SELECT * FROM real_customer WHERE id = ?";
+                Map<String, Object> realCustomerRow = jdbc.queryForMap(realCustomerSql, id);
+                return RealCustomer.builder()
+                        .id(id)
+                        .name(rs.getString("name"))
+                        .family(rs.getString("family"))
+                        .phoneNumber(rs.getString("phone_number"))
+                        .type(type)
+                        .nationality((String) realCustomerRow.get("nationality"))
+                        .build();
+            } else {
+                String legalCustomerSql = "SELECT * FROM legal_customer WHERE id = ?";
+                Map<String, Object> legalCustomerRow = jdbc.queryForMap(legalCustomerSql, id);
+                return LegalCustomer.builder()
+                        .id(id)
+                        .name(rs.getString("name"))
+                        .family(rs.getString("family"))
+                        .phoneNumber(rs.getString("phone_number"))
+                        .type(type)
+                        .industry((String) legalCustomerRow.get("industry"))
+                        .build();
+            }
+        }, name);
     }
 }
