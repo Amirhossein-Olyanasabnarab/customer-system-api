@@ -1,6 +1,7 @@
 package dk.dev.app.dao.impl;
 
 import dk.dev.app.dao.CustomerDao;
+import dk.dev.app.enums.CustomerType;
 import dk.dev.app.model.Customer;
 import dk.dev.app.model.LegalCustomer;
 import dk.dev.app.model.RealCustomer;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -84,7 +86,40 @@ public class CustomerJdbcDao implements CustomerDao {
 
     @Override
     public Optional<Customer> findById(Long id) {
-        return Optional.empty();
+        if(!existsById(id)) {
+            return Optional.empty();
+        }
+        String customerSql = "SELECT * FROM customer WHERE id = ?";
+        Map<String, Object> customerRow = jdbc.queryForMap(customerSql, id);
+
+        CustomerType type = CustomerType.valueOf((String) customerRow.get("type"));
+        Customer customer;
+
+        if (type == CustomerType.REAL) {
+            String realCustomerSql = "SELECT * FROM real_customer WHERE id = ?";
+            Map<String, Object> realCustomerRow = jdbc.queryForMap(realCustomerSql, id);
+            customer = RealCustomer.builder()
+                    .id(id)
+                    .name((String) customerRow.get("name"))
+                    .family((String) customerRow.get("family"))
+                    .phoneNumber((String) customerRow.get("phone_number"))
+                    .type(type)
+                    .nationality((String) realCustomerRow.get("nationality"))
+                    .build();
+        } else {
+            String legalCustomerSql = "SELECT * FROM legal_customer WHERE id = ?";
+            Map<String, Object> legalCustomerRow = jdbc.queryForMap(legalCustomerSql, id);
+            customer = LegalCustomer.builder()
+                    .id(id)
+                    .name((String) customerRow.get("name"))
+                    .family((String) customerRow.get("family"))
+                    .phoneNumber((String) customerRow.get("phone_number"))
+                    .type(type)
+                    .industry((String) legalCustomerRow.get("fax"))
+                    .build();
+        }
+
+        return Optional.of(customer);
     }
 
     @Override
