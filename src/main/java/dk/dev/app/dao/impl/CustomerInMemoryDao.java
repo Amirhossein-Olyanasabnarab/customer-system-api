@@ -46,7 +46,10 @@ public class CustomerInMemoryDao implements CustomerDao {
 
     @Override
     public boolean existsById(Long id) {
-        return id != null;
+        if (id == null) {
+            return false;
+        }else
+            return customers.containsKey(id);
     }
 
     @Override
