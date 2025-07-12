@@ -6,6 +6,7 @@ import dk.dev.app.dto.CustomerDto;
 import dk.dev.app.dto.LegalCustomerDto;
 import dk.dev.app.dto.RealCustomerDto;
 import dk.dev.app.enums.CustomerType;
+import dk.dev.app.exception.CustomerNotFoundException;
 import dk.dev.app.facade.CustomerFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -153,8 +154,13 @@ public class ConsoleInterface {
     private void viewCustomerById() {
         System.out.println("Enter customer ID");
         Long id = Long.parseLong(scanner.nextLine());
-        CustomerDto customer = facade.getCustomerById(id);
-        printJsonObject(customer);
+        try {
+            CustomerDto customer = facade.getCustomerById(id);
+            printJsonObject(customer);
+        }catch (CustomerNotFoundException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void viewAllCustomers() {
