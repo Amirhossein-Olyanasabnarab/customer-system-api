@@ -7,6 +7,7 @@ import dk.dev.app.model.LegalCustomer;
 import dk.dev.app.model.RealCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Repository
 @Primary
+@Profile("jdbc")
 public class CustomerJdbcDao implements CustomerDao {
 
     private final JdbcTemplate jdbc;
