@@ -22,28 +22,28 @@ public class CustomerService {
         this.customerDao = customerDao;
     }
 
-    @PostConstruct
-    public void init() {
-        addCustomer(RealCustomer.builder()
-                .id(1L)
-                .name("Johan")
-                .family("Kahn")
-                .phoneNumber("0049 29 22 22 22")
-                .type(CustomerType.REAL)
-                .nationality("German")
-                .build()
-        );
-
-        addCustomer(LegalCustomer.builder()
-                .id(2L)
-                .name("Johb")
-                .family("Davis")
-                .phoneNumber("40 444 444 444")
-                .type(CustomerType.LEGAL)
-                .industry("Tech")
-                .build()
-        );
-    }
+//    @PostConstruct
+//    public void init() {
+//        addCustomer(RealCustomer.builder()
+//                .id(1L)
+//                .name("Johan")
+//                .family("Kahn")
+//                .phoneNumber("0049 29 22 22 22")
+//                .type(CustomerType.REAL)
+//                .nationality("German")
+//                .build()
+//        );
+//
+//        addCustomer(LegalCustomer.builder()
+//                .id(2L)
+//                .name("Johb")
+//                .family("Davis")
+//                .phoneNumber("40 444 444 444")
+//                .type(CustomerType.LEGAL)
+//                .industry("Tech")
+//                .build()
+//        );
+//    }
 
     public Customer addCustomer(Customer customer) {
         return customerDao.save(customer);
