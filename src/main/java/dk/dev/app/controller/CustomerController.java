@@ -3,6 +3,7 @@ package dk.dev.app.controller;
 import dk.dev.app.dto.CustomerDto;
 import dk.dev.app.dto.LegalCustomerDto;
 import dk.dev.app.dto.RealCustomerDto;
+import dk.dev.app.exception.CustomerNotFoundException;
 import dk.dev.app.facade.CustomerFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,8 +45,23 @@ public class CustomerController {
 
     @Operation(summary = "Get a customer by id", description = "Retrieve a customer")
     @GetMapping("/{id}")
-    public CustomerDto getCustomerById(@PathVariable("id") Long id) {
-        return customerFacade.getCustomerById(id);
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customer was found"),
+            @ApiResponse(responseCode = "404", description = "Customer was not found",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+    })
+    public ResponseEntity<?> getCustomerById(@PathVariable("id") Long id) {
+        try {
+            CustomerDto customer = customerFacade.getCustomerById(id);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(customer);
+        } catch (CustomerNotFoundException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(exception.getMessage());
+        }
     }
 
     @Operation(summary = "Get customers by name", description = "Retrieve a list of customers by their name")
