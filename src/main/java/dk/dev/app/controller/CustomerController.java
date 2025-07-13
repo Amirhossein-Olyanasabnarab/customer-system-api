@@ -168,16 +168,15 @@ public class CustomerController {
             )
     })
     public ResponseEntity<?> getCustomersByName(@PathVariable("name") String name) {
-        List<CustomerDto> customers = customerFacade.getCustomerByName(name);
-        if (customers.isEmpty()) {
+        try {
+            List<CustomerDto> customers = customerFacade.getCustomerByName(name);
+            return ResponseEntity.status(HttpStatus.OK).body(customers);
+        }catch (CustomerNotFoundException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new dk.dev.app.dto.ErrorResponse(
-                            HttpStatus.NOT_FOUND.value(),
-                            "Customer was not found"
-                    ));
-        } else
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(customers);
+                    .body(new dk.dev.app.dto.ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                            exception.getMessage())
+                    );
+        }
     }
 
     @Operation(summary = "Delete a customer", description = "Remove a customer from the customer system")

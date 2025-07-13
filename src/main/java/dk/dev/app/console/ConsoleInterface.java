@@ -62,12 +62,13 @@ public class ConsoleInterface {
     private void findByName() {
         System.out.print("Enter customer name to search: ");
         String name = scanner.nextLine();
-        List<CustomerDto> customers = facade.getCustomerByName(name);
-        if (customers.isEmpty()) {
-            System.out.println("No customers found with the name: " + name);
-        } else {
+        try {
+            List<CustomerDto> customers = facade.getCustomerByName(name);
             customers.forEach(this::printJsonObject);
+        }catch (CustomerNotFoundException e){
+            System.out.println(e.getMessage());
         }
+
     }
 
     private void deleteCustoemr() {

@@ -2,6 +2,7 @@ package dk.dev.app.service;
 
 import dk.dev.app.dao.CustomerDao;
 import dk.dev.app.enums.CustomerType;
+import dk.dev.app.exception.CustomerNotFoundException;
 import dk.dev.app.model.Customer;
 import dk.dev.app.model.LegalCustomer;
 import dk.dev.app.model.RealCustomer;
@@ -74,6 +75,10 @@ public class CustomerService {
     }
 
     public List<Customer> findByName(String name) {
-        return customerDao.findByNameIgnoreCase(name);
+         List<Customer> customers = customerDao.findByNameIgnoreCase(name);
+         if (customers.isEmpty()) {
+             throw new CustomerNotFoundException("Customer was not found");
+         }
+         return customers;
     }
 }
