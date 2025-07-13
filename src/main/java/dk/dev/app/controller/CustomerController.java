@@ -98,8 +98,79 @@ public class CustomerController {
 
     @Operation(summary = "Get customers by name", description = "Retrieve a list of customers by their name")
     @GetMapping("/name/{name}")
-    public List<CustomerDto> getCustomersByName(@PathVariable("name") String name) {
-        return customerFacade.getCustomerByName(name);
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(
+                                            oneOf = {
+                                                    RealCustomerDto.class,
+                                                    LegalCustomerDto.class
+                                            }
+                                    )
+                            ),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Real Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"REAL\","
+                                                    + "\"nationality\": \"British\""
+                                                    + "}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Legal Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"LEGAL\","
+                                                    + "\"industry\": \"Tech\""
+                                                    + "}"
+                                    )
+                            }
+                    )
+            ),
+            @ApiResponse(responseCode = "404",
+                    description = "No customers found with the given name", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = {
+                            @ExampleObject(
+                                    name = "Real Customer Example",
+                                    value = "{"
+                                            + "\"name\": \"John\","
+                                            + "\"family\": \"Doe\","
+                                            + "\"phoneNumber\": \"+1234567890\","
+                                            + "\"type\": \"REAL\","
+                                            + "\"nationality\": \"British\""
+                                            + "}"
+                            ),
+                            @ExampleObject(
+                                    name = "Legal Customer Example",
+                                    value = "{"
+                                            + "\"name\": \"John\","
+                                            + "\"family\": \"Doe\","
+                                            + "\"phoneNumber\": \"+1234567890\","
+                                            + "\"type\": \"LEGAL\","
+                                            + "\"industry\": \"Tech\""
+                                            + "}"
+                            )
+                    }
+            )
+            )
+    })
+    public ResponseEntity<?> getCustomersByName(@PathVariable("name") String name) {
+        List<CustomerDto> customers = customerFacade.getCustomerByName(name);
+        if (customers.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Customer was not found");
+        } else
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(customers);
     }
 
     @Operation(summary = "Delete a customer", description = "Remove a customer from the customer system")
