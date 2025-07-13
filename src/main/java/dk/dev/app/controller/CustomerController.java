@@ -6,6 +6,7 @@ import dk.dev.app.dto.RealCustomerDto;
 import dk.dev.app.exception.CustomerNotFoundException;
 import dk.dev.app.facade.CustomerFacade;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,7 +47,38 @@ public class CustomerController {
     @Operation(summary = "Get a customer by id", description = "Retrieve a customer")
     @GetMapping("/{id}")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Customer was found"),
+            @ApiResponse(responseCode = "200", description = "Customer was found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    oneOf = {
+                                            RealCustomerDto.class,
+                                            LegalCustomerDto.class
+                                    }
+                            ),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Real Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"REAL\","
+                                                    + "\"nationality\": \"British\""
+                                                    + "}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Legal Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"LEGAL\","
+                                                    + "\"industry\": \"Tech\""
+                                                    + "}"
+                                    )
+                            }
+                    )),
             @ApiResponse(responseCode = "404", description = "Customer was not found",
                     content = @Content(
                             schema = @Schema(implementation = ErrorResponse.class)
