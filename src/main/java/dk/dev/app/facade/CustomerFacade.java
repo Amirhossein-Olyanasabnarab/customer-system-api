@@ -34,8 +34,8 @@ public class CustomerFacade {
         return entity != null ? this.customerMapper.toDto(entity) : null;
     }
 
-    public boolean deleteCustomer(Long id) {
-        return customerService.deleteCustomer(id);
+    public void  deleteCustomer(Long id) {
+         customerService.deleteCustomer(id);
     }
     public CustomerDto getCustomerById(Long id) throws CustomerNotFoundException {
         Optional<Customer> entity = customerService.getCustomerById(id);

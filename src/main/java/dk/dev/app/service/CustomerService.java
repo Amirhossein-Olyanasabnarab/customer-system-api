@@ -58,12 +58,11 @@ public class CustomerService {
        return null;
     }
 
-    public boolean deleteCustomer(Long id) {
+    public void deleteCustomer(Long id) {
         if (customerDao.existsById(id)) {
             customerDao.deleteById(id);
-            return true;
-        }
-        return false;
+        }else
+            throw new CustomerNotFoundException("Customer with id " + id + " not found");
     }
 
     public Optional<Customer> getCustomerById(Long id) {
