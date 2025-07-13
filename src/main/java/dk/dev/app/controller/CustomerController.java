@@ -207,14 +207,17 @@ public class CustomerController {
                     )
             )
     })
-    public ResponseEntity<String> deleteCustomer(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteCustomer(@PathVariable("id") Long id) {
         boolean success = customerFacade.deleteCustomer(id);
         if (success) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body("Customer deleted successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body("Error deleting customer");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new dk.dev.app.dto.ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Customer was not found"
+                    ));
         }
     }
 
