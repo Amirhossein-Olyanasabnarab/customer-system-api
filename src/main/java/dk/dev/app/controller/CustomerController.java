@@ -93,7 +93,10 @@ public class CustomerController {
                     .body(customer);
         } catch (CustomerNotFoundException exception) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(exception.getMessage());
+                    .body(new dk.dev.app.dto.ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            exception.getMessage()
+                    ));
         }
     }
 
@@ -168,7 +171,10 @@ public class CustomerController {
         List<CustomerDto> customers = customerFacade.getCustomerByName(name);
         if (customers.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Customer was not found");
+                    .body(new dk.dev.app.dto.ErrorResponse(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Customer was not found"
+                    ));
         } else
             return ResponseEntity.status(HttpStatus.OK)
                     .body(customers);
