@@ -81,8 +81,8 @@ public class CustomerController {
                     )),
             @ApiResponse(responseCode = "404", description = "Customer was not found",
                     content = @Content(
-                            schema = @Schema(type = "string"),
-                            mediaType = "text/plain"
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            mediaType = "application/json"
                     )
             ),
     })
