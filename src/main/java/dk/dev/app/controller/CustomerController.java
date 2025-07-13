@@ -8,7 +8,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +30,7 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerFacade customerFacade;
+
     @Autowired
     public CustomerController(CustomerFacade customerFacade) {
         this.customerFacade = customerFacade;
@@ -35,6 +41,7 @@ public class CustomerController {
     public List<CustomerDto> getAllCustomers() {
         return customerFacade.getAllCustomers();
     }
+
     @Operation(summary = "Get a customer by id", description = "Retrieve a customer")
     @GetMapping("/{id}")
     public CustomerDto getCustomerById(@PathVariable("id") Long id) {
@@ -49,12 +56,46 @@ public class CustomerController {
 
     @Operation(summary = "Delete a customer", description = "Remove a customer from the customer system")
     @DeleteMapping("/{id}")
-    public String deleteCustomer(@PathVariable("id") Long id) {
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Remove a customer from customer system"),
+            @ApiResponse(responseCode = "204", description = "Customer not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Real Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"REAL\","
+                                                    + "\"nationality\": \"UK\""
+                                                    + "}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Legal Customer Example",
+                                            value = "{"
+                                                    + "\"name\": \"John\","
+                                                    + "\"family\": \"Doe\","
+                                                    + "\"phoneNumber\": \"+1234567890\","
+                                                    + "\"type\": \"LEGAL\","
+                                                    + "\"industry\": \"Tech\""
+                                                    + "}"
+                                    )
+                            }
+                    )
+            )
+    })
+    public ResponseEntity<String> deleteCustomer(@PathVariable("id") Long id) {
         boolean success = customerFacade.deleteCustomer(id);
         if (success) {
-            return "Customer with id " + id + " successfully deleted";
-        }else
-            return "Customer with id " + id + " could not be deleted";
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("Customer deleted successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body("Error deleting customer");
+        }
     }
 
     @Operation(summary = "Add a new customer", description = "Create a new customer")
@@ -94,13 +135,13 @@ public class CustomerController {
                     }
             )
     )
-            @RequestBody CustomerDto customerDto) {
+                                   @RequestBody CustomerDto customerDto) {
         return customerFacade.addCustomer(customerDto);
     }
 
     @Operation(summary = "Update an existing customer", description = "Update the details of an existing customer")
     @PutMapping("/{id}")
-    public CustomerDto updateCustomer(@PathVariable Long id,  @io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public CustomerDto updateCustomer(@PathVariable Long id, @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Updated customer object",
             required = true,
             content = @Content(
@@ -134,7 +175,7 @@ public class CustomerController {
                             )
                     }
             )
-    )@RequestBody CustomerDto customerDto) {
-        return customerFacade.updateCustomer(id,customerDto);
+    ) @RequestBody CustomerDto customerDto) {
+        return customerFacade.updateCustomer(id, customerDto);
     }
 }
