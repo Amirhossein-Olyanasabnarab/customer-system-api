@@ -87,13 +87,9 @@ public class CustomerController {
             ),
     })
     public ResponseEntity<?> getCustomerById(@PathVariable("id") Long id) {
-        try {
-            CustomerDto customer = customerFacade.getCustomerById(id);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(customer);
-        } catch (CustomerNotFoundException exception) {
-            return getErrorResponse(exception);
-        }
+        CustomerDto customer = customerFacade.getCustomerById(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(customer);
     }
 
     @Operation(summary = "Get customers by name", description = "Retrieve a list of customers by their name")
@@ -164,12 +160,8 @@ public class CustomerController {
             )
     })
     public ResponseEntity<?> getCustomersByName(@PathVariable("name") String name) {
-        try {
-            List<CustomerDto> customers = customerFacade.getCustomerByName(name);
-            return ResponseEntity.status(HttpStatus.OK).body(customers);
-        }catch (CustomerNotFoundException exception) {
-            return getErrorResponse(exception);
-        }
+        List<CustomerDto> customers = customerFacade.getCustomerByName(name);
+        return ResponseEntity.status(HttpStatus.OK).body(customers);
     }
 
     @Operation(summary = "Delete a customer", description = "Remove a customer from the customer system")
@@ -206,15 +198,10 @@ public class CustomerController {
             )
     })
     public ResponseEntity<?> deleteCustomer(@PathVariable("id") Long id) {
-        try {
-            customerFacade.deleteCustomer(id);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("Customer with id " + id + " deleted successfully");
-        }catch (CustomerNotFoundException exception) {
-            return getErrorResponse(exception);
-        }
+        customerFacade.deleteCustomer(id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("Customer with id " + id + " deleted successfully");
     }
-
 
 
     @Operation(summary = "Add a new customer", description = "Create a new customer")
@@ -298,9 +285,5 @@ public class CustomerController {
         return customerFacade.updateCustomer(id, customerDto);
     }
 
-    private static ResponseEntity<dk.dev.app.dto.ErrorResponse> getErrorResponse(CustomerNotFoundException exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new dk.dev.app.dto.ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                        exception.getMessage()));
-    }
+
 }
