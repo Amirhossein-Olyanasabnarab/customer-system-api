@@ -92,11 +92,7 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(customer);
         } catch (CustomerNotFoundException exception) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new dk.dev.app.dto.ErrorResponse(
-                            HttpStatus.NOT_FOUND.value(),
-                            exception.getMessage()
-                    ));
+            return getErrorResponse(exception);
         }
     }
 
@@ -172,10 +168,7 @@ public class CustomerController {
             List<CustomerDto> customers = customerFacade.getCustomerByName(name);
             return ResponseEntity.status(HttpStatus.OK).body(customers);
         }catch (CustomerNotFoundException exception) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new dk.dev.app.dto.ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                            exception.getMessage())
-                    );
+            return getErrorResponse(exception);
         }
     }
 
@@ -218,11 +211,11 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body("Customer with id " + id + " deleted successfully");
         }catch (CustomerNotFoundException exception) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new dk.dev.app.dto.ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                            exception.getMessage()));
+            return getErrorResponse(exception);
         }
     }
+
+
 
     @Operation(summary = "Add a new customer", description = "Create a new customer")
     @PostMapping
@@ -303,5 +296,11 @@ public class CustomerController {
             )
     ) @RequestBody CustomerDto customerDto) {
         return customerFacade.updateCustomer(id, customerDto);
+    }
+
+    private static ResponseEntity<dk.dev.app.dto.ErrorResponse> getErrorResponse(CustomerNotFoundException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new dk.dev.app.dto.ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                        exception.getMessage()));
     }
 }
