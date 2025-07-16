@@ -1,7 +1,7 @@
 create table customer(
     id bigint auto_increment primary key,
-    name varchar(50),
-    family varchar(100),
+    name varchar(50) not null ,
+    family varchar(100) not null ,
     phone_number varchar(20),
     type varchar(10)
 );
