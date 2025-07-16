@@ -1,12 +1,9 @@
 package dk.dev.app.service;
 
 import dk.dev.app.dao.CustomerDao;
-import dk.dev.app.enums.CustomerType;
 import dk.dev.app.exception.CustomerNotFoundException;
+import dk.dev.app.exception.DuplicatedCustomerException;
 import dk.dev.app.model.Customer;
-import dk.dev.app.model.LegalCustomer;
-import dk.dev.app.model.RealCustomer;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,45 +20,26 @@ public class CustomerService {
         this.customerDao = customerDao;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        addCustomer(RealCustomer.builder()
-//                .id(1L)
-//                .name("Johan")
-//                .family("Kahn")
-//                .phoneNumber("0049 29 22 22 22")
-//                .type(CustomerType.REAL)
-//                .nationality("German")
-//                .build()
-//        );
-//
-//        addCustomer(LegalCustomer.builder()
-//                .id(2L)
-//                .name("Johb")
-//                .family("Davis")
-//                .phoneNumber("40 444 444 444")
-//                .type(CustomerType.LEGAL)
-//                .industry("Tech")
-//                .build()
-//        );
-//    }
 
     public Customer addCustomer(Customer customer) {
+        if (customerDao.existByNameIgnoreCaseAndFamilyIgnoreCase(customer.getFamily(), customer.getFamily())) {
+            throw new DuplicatedCustomerException("Customer with full name " + customer.getName() + " " + customer.getFamily() + " is already exists");
+        }
         return customerDao.save(customer);
     }
 
     public Customer updateCustomer(Long id, Customer updatedCustomer) {
-       if (customerDao.existsById(id)) {
-           updatedCustomer.setId(id);
-           return customerDao.save(updatedCustomer);
-       }
-       return null;
+        if (customerDao.existsById(id)) {
+            updatedCustomer.setId(id);
+            return customerDao.save(updatedCustomer);
+        }
+        return null;
     }
 
     public void deleteCustomer(Long id) {
-        if (customerDao.existsById(id)) {
+        if (customerDao.existsById(id))
             customerDao.deleteById(id);
-        }else
+         else
             throw new CustomerNotFoundException("Customer with id " + id + " not found");
     }
 
@@ -74,10 +52,10 @@ public class CustomerService {
     }
 
     public List<Customer> findByName(String name) {
-         List<Customer> customers = customerDao.findByNameIgnoreCase(name);
-         if (customers.isEmpty()) {
-             throw new CustomerNotFoundException("Customer was not found");
-         }
-         return customers;
+        List<Customer> customers = customerDao.findByNameIgnoreCase(name);
+        if (customers.isEmpty()) {
+            throw new CustomerNotFoundException("Customer was not found");
+        }
+        return customers;
     }
 }

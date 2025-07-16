@@ -196,4 +196,9 @@ public class CustomerJdbcDao implements CustomerDao {
             }
         }, name);
     }
+
+    @Override
+    public boolean existByNameIgnoreCaseAndFamilyIgnoreCase(String name, String family) {
+        return false;
+    }
 }
