@@ -62,7 +62,9 @@ public class CustomerInMemoryDao implements CustomerDao {
     }
 
     @Override
-    public boolean existByNameIgnoreCaseAndFamilyIgnoreCase(String name, String family) {
+    public boolean existsByNameIgnoreCaseAndFamilyIgnoreCase(String name, String family) {
         return false;
     }
+
+
 }

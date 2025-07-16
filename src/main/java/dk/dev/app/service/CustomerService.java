@@ -22,7 +22,7 @@ public class CustomerService {
 
 
     public Customer addCustomer(Customer customer) {
-        if (customerDao.existByNameIgnoreCaseAndFamilyIgnoreCase(customer.getFamily(), customer.getFamily())) {
+        if (customerDao.existsByNameIgnoreCaseAndFamilyIgnoreCase(customer.getName(), customer.getFamily())) {
             throw new DuplicatedCustomerException("Customer with full name " + customer.getName() + " " + customer.getFamily() + " is already exists");
         }
         return customerDao.save(customer);
@@ -37,9 +37,9 @@ public class CustomerService {
     }
 
     public void deleteCustomer(Long id) {
-        if (customerDao.existsById(id))
+        if (customerDao.existsById(id)) {
             customerDao.deleteById(id);
-         else
+        }else
             throw new CustomerNotFoundException("Customer with id " + id + " not found");
     }
 
