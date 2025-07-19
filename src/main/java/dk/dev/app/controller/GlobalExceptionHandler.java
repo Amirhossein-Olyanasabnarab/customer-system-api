@@ -4,6 +4,7 @@ import dk.dev.app.dto.ErrorResponse;
 import dk.dev.app.exception.CustomerNotFoundException;
 import dk.dev.app.exception.DuplicatedCustomerException;
 import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
+import org.hibernate.PropertyValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSQLIntegrityConstraintViolationException(JdbcSQLIntegrityConstraintViolationException exception) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
                 exception.getOriginalMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PropertyValueException.class)
+    public ResponseEntity<ErrorResponse> handlePropertyValueException(PropertyValueException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
+                exception.getLocalizedMessage()
+                        .replaceAll("\\b[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)*\\.([A-Z][a-zA-Z0-9_]+)",
+                                "$2"));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
